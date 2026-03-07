@@ -1,0 +1,24 @@
+{
+    "pickle_types": [
+    {
+        "id": "tender-mango",
+        "name": "Tender Mango"
+    },
+    {
+        "id": "spicy-garlic",
+        "name": "Spicy Garlic"
+    },
+    {
+        "id": "kerala-king-fish",
+        "name": "Kerala King Fish"
+    },
+    {
+        "id": "dried-prawns",
+        "name": "Dried Prawns"
+    },
+    {
+        "id": "traditional-mango",
+        "name": "Traditional Mango"
+    }
+]
+}

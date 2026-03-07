@@ -9,7 +9,9 @@
         "image": "https://images.unsplash.com/photo-1626200419199-391ae4be7a41?q=80&w=600&auto=format&fit=crop",
         "isLiked": false,
         "isBestSeller": true,
-        "isFeatured": false
+        "isFeatured": false,
+        "dietary": "veg",
+        "inStock": true
     },
     {
         "id": "2",
@@ -21,7 +23,9 @@
         "image": "https://images.unsplash.com/photo-1589301760014-d929f39ce9b1?q=80&w=600&auto=format&fit=crop",
         "isLiked": false,
         "isBestSeller": true,
-        "isFeatured": false
+        "isFeatured": false,
+        "dietary": "veg",
+        "inStock": true
     },
     {
         "id": "3",
@@ -33,7 +37,9 @@
         "image": "https://images.unsplash.com/photo-1548943487-a2e4e43b4859?q=80&w=600&auto=format&fit=crop",
         "isLiked": true,
         "isBestSeller": true,
-        "isFeatured": false
+        "isFeatured": false,
+        "dietary": "non-veg",
+        "inStock": true
     },
     {
         "id": "4",
@@ -45,7 +51,9 @@
         "image": "https://media.gettyimages.com/id/1338316600/photo/image-glass-jar-of-green-mango-chutney-recipe-with-hessian-lid-pickle-with-chopped-raw-mango.jpg?s=612x612&w=gi&k=20&c=ibrW29Xn-GMrEnZU0v5w_9Z1GLj9u7nYzjwpoKOChIw=",
         "isLiked": false,
         "isBestSeller": true,
-        "isFeatured": false
+        "isFeatured": false,
+        "dietary": "non-veg",
+        "inStock": false
     },
     {
         "id": "5",
@@ -57,6 +65,8 @@
         "image": "https://t4.ftcdn.net/jpg/04/53/08/63/360_F_453086324_bEodi7wVsE9dQNroB8sglehfANhubZP2.jpg",
         "isLiked": false,
         "isBestSeller": false,
-        "isFeatured": true
+        "isFeatured": true,
+        "dietary": "veg",
+        "inStock": true
     }
 ]

@@ -12,19 +12,15 @@ export default function ProductDetails() {
     ];
 
     return (
-        <div className="min-h-screen pb-32 bg-gradient-to-br from-[#bad1c1] via-[#dcd2ac] to-[#f2ecdb] text-text-main relative font-sans selection:bg-brand-primary/20">
+        <div className="pb-32 bg-gradient-to-br from-[#bad1c1] via-[#dcd2ac] to-[#f2ecdb] text-text-main relative font-sans selection:bg-brand-primary/20 h-full">
 
-            {/* Top Bar */}
-            <div className="flex items-center justify-between p-4 sticky top-0 z-10 pt-safe max-w-screen-xl mx-auto md:px-8">
+            {/* Back Button */}
+            <div className="flex items-center px-4 py-3 max-w-screen-xl mx-auto md:px-8">
                 <button
                     onClick={() => navigate(-1)}
-                    className="w-[42px] h-[42px] rounded-full bg-black/5 flex items-center justify-center text-text-main hover:bg-black/10 transition-colors backdrop-blur-sm"
+                    className="w-10 h-10 rounded-full bg-black/5 flex items-center justify-center text-text-main hover:bg-black/10 transition-colors backdrop-blur-sm shadow-sm"
                 >
-                    <ArrowLeft size={22} strokeWidth={2.5} />
-                </button>
-                <span className="font-sans font-bold text-lg tracking-wide text-text-main/90">Product Details</span>
-                <button className="w-[42px] h-[42px] rounded-full bg-black/5 flex items-center justify-center text-text-main hover:bg-black/10 transition-colors backdrop-blur-sm">
-                    <Share2 size={20} className="-ml-0.5" strokeWidth={2} />
+                    <ArrowLeft size={20} strokeWidth={2.5} />
                 </button>
             </div>
 
