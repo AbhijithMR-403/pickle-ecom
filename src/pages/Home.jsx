@@ -11,7 +11,8 @@ export default function Home() {
     const navigate = useNavigate();
 
     return (
-        <div className="pb-24 bg-[#fffaf0] overflow-x-hidden h-full">            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="pb-24 bg-[#fffaf0] overflow-x-hidden h-full">            
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
             {/* <div className="md:px-4 lg:px-8 max-w-screen-xl mx-auto">
                 <SearchBar />
             </div> */}

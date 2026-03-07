@@ -1,4 +1,4 @@
-import { Heart, ShoppingCart } from 'lucide-react';
+import { Heart, MessageCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export default function ProductCard({ product }) {
@@ -28,10 +28,16 @@ export default function ProductCard({ product }) {
                 <div className="flex items-center justify-between mt-auto">
                     <span className="font-bold text-brand-accent text-base">₹{product.price}</span>
                     <button
-                        className="w-8 h-8 bg-[#2e7d32] hover:bg-[#1b5e20] rounded-xl flex items-center justify-center text-white shadow-sm transition-colors active:scale-95"
-                        onClick={(e) => e.stopPropagation()}
+                        className="w-8 h-8 bg-[#25D366] hover:bg-[#128C7E] rounded-xl flex items-center justify-center text-white shadow-sm transition-colors active:scale-95"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            const message = `Hi, I am interested in buying ${product.name} (₹${product.price} each). Can you provide more details?`;
+                            const whatsappUrl = import.meta.env.VITE_WHATSAPP_API;
+                            const fullUrl = `${whatsappUrl}?text=${encodeURIComponent(message)}`;
+                            window.open(fullUrl, '_blank');
+                        }}
                     >
-                        <ShoppingCart size={15} />
+                        <MessageCircle size={15} />
                     </button>
                 </div>
             </div>
