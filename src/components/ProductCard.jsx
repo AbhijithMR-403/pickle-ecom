@@ -28,7 +28,7 @@ export default function ProductCard({ product }) {
                 <div className="flex items-center justify-between mt-auto">
                     <span className="font-bold text-brand-accent text-base">₹{product.price}</span>
                     <button
-                        className="w-8 h-8 bg-[#25D366] hover:bg-[#128C7E] rounded-xl flex items-center justify-center text-white shadow-sm transition-colors active:scale-95"
+                        className="w-8 h-8 bg-[#25D366] hover:bg-[#128C7E] rounded-xl flex items-center justify-center text-white shadow-sm transition-colors active:scale-95 cursor-pointer"
                         onClick={(e) => {
                             e.stopPropagation();
                             const message = `Hi, I am interested in buying ${product.name} (₹${product.price} each). Can you provide more details?`;
