@@ -1,17 +1,20 @@
 import { CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import products from '../data/products.json';
 
 export default function FeaturedCard() {
     const navigate = useNavigate();
+    const product = products.find(p => p.isFeatured) || products[0];
+
     return (
         <div className="px-4 py-2" onClick={() => navigate('/product/featured')}>
             <div className="rounded-2xl overflow-hidden bg-[#996b42] text-white shadow-lg relative cursor-pointer group active:scale-[0.98] transition-all">
-                <div className="h-44 overflow-hidden bg-[#4a3933]">
+                <div className="h-48 sm:h-56 md:h-72 lg:h-80 xl:h-96 overflow-hidden bg-[#4a3933]">
                     {/* using the image generated via tools */}
                     <img
-                        src="/images/featured_pickle_1772787183241.png"
-                        alt="Bharani Pickle"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 mixing-blend-overlay"
+                        src={product.image}
+                        alt={product.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 mix-blend-overlay"
                         onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1626200419199-391ae4be7a41?q=80&w=600&auto=format&fit=crop' }}
                     />
                 </div>
@@ -25,14 +28,14 @@ export default function FeaturedCard() {
                             <span className="text-[10px] font-bold text-white tracking-wide">AUTHENTIC</span>
                         </div>
                     </div>
-                    <h2 className="text-xl font-serif font-bold mb-1.5 text-white tracking-wide">Grandma's Special</h2>
+                    <h2 className="text-xl font-serif font-bold mb-1.5 text-white tracking-wide">{product.name}</h2>
                     <p className="text-xs text-orange-50/90 leading-relaxed mb-4 font-sans pr-2 font-medium">
-                        Traditional Mango Pickle in Bharani. Recipe passed down through generations using cold-pressed gingelly oil.
+                        {product.description}
                     </p>
                     <div className="flex justify-between items-center">
                         <div className="flex items-baseline gap-1">
-                            <span className="text-xl font-bold text-white tracking-tight">₹249</span>
-                            <span className="text-[10px] text-orange-200/80 font-medium">/ 500g</span>
+                            <span className="text-xl font-bold text-white tracking-tight">₹{product.price}</span>
+                            <span className="text-[10px] text-orange-200/80 font-medium">/ {product.weight}</span>
                         </div>
                         <button className="bg-white text-[#825a36] hover:bg-orange-50 font-bold py-1.5 px-5 rounded-full text-sm transition-colors shadow-sm">
                             Order Now

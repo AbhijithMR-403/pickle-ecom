@@ -3,60 +3,29 @@ import SearchBar from '../components/SearchBar';
 import FeaturedCard from '../components/FeaturedCard';
 import CategoryList from '../components/CategoryList';
 import ProductCard from '../components/ProductCard';
-import BottomNav from '../components/BottomNav';
+import products from '../data/products.json';
 
 export default function Home() {
-    const bestSellers = [
-        {
-            id: "1",
-            name: "Kadumanga",
-            type: "Tender Mango",
-            price: "180",
-            image: "https://images.unsplash.com/photo-1626200419199-391ae4be7a41?q=80&w=600&auto=format&fit=crop",
-            isLiked: false
-        },
-        {
-            id: "2",
-            name: "Veluthulli",
-            type: "Spicy Garlic",
-            price: "165",
-            image: "https://images.unsplash.com/photo-1589301760014-d929f39ce9b1?q=80&w=600&auto=format&fit=crop",
-            isLiked: false
-        },
-        {
-            id: "3",
-            name: "Meen Achar",
-            type: "Kerala King Fish",
-            price: "320",
-            image: "https://images.unsplash.com/photo-1548943487-a2e4e43b4859?q=80&w=600&auto=format&fit=crop",
-            isLiked: true
-        },
-        {
-            id: "4",
-            name: "Chemmeen",
-            type: "Dried Prawns",
-            price: "280",
-            image: "https://images.unsplash.com/photo-1559841644-08984562005a?q=80&w=600&auto=format&fit=crop",
-            isLiked: false
-        }
-    ];
+    const bestSellers = products.filter(product => product.isBestSeller);
 
     return (
         <div className="min-h-screen pb-24 bg-[#fffaf0] overflow-x-hidden">
             <Header />
 
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-                <SearchBar />
+                <div className="md:px-4 lg:px-8 max-w-screen-xl mx-auto">
+                    <SearchBar />
+                </div>
 
-                <div className="mt-1">
+                <div className="mt-1 md:px-4 lg:px-8 max-w-screen-xl mx-auto">
                     <FeaturedCard />
                 </div>
 
-                <div className="mt-4">
+                <div className="mt-4 md:px-4 lg:px-8 max-w-screen-xl mx-auto">
                     <CategoryList />
                 </div>
 
-                <div className="mt-6 px-4 mb-4 flex justify-between items-baseline">
+                <div className="mt-8 px-4 md:px-8 lg:px-12 mb-4 flex justify-between items-baseline max-w-screen-xl mx-auto">
                     <div className="flex items-center gap-2">
                         <div className="w-1.5 h-4 bg-[#8c6239] rounded-full"></div>
                         <h3 className="text-xl font-serif font-bold text-[#431407]">Best Sellers</h3>
@@ -64,14 +33,12 @@ export default function Home() {
                     <button className="text-[13px] font-bold text-brand-accent hover:text-brand-primary transition-colors tracking-wide pr-1">View All</button>
                 </div>
 
-                <div className="px-4 grid grid-cols-2 gap-3.5 pb-2">
+                <div className="px-4 md:px-8 xl:px-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3.5 md:gap-6 pb-12 max-w-screen-xl mx-auto">
                     {bestSellers.map(product => (
                         <ProductCard key={product.id} product={product} />
                     ))}
                 </div>
             </div>
-
-            <BottomNav />
         </div>
     );
 }

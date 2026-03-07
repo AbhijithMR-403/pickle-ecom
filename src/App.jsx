@@ -5,7 +5,7 @@ import ProductDetails from './pages/ProductDetails';
 function App() {
   return (
     <Router>
-      <div className="max-w-md mx-auto min-h-screen bg-brand-light relative shadow-xl overflow-hidden">
+      <div className="w-full min-h-screen bg-brand-light relative overflow-x-hidden">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/product/:id" element={<ProductDetails />} />
