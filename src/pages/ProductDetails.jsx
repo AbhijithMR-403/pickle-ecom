@@ -51,7 +51,7 @@ export default function ProductDetails() {
                         <h1 className="text-[32px] md:text-4xl lg:text-5xl font-serif font-bold text-[#1a0f08] leading-[1.1] mb-5 tracking-tight">{productName}</h1>
                         <div className="flex flex-wrap gap-2.5">
                             <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-orange-500/20 text-[10px] font-bold text-orange-700 uppercase tracking-widest shadow-sm bg-orange-100/30">
-                                <Flame size={12} className="text-orange-500" strokeWidth={2.5} /> Spiciness: High
+                                <Flame size={12} className="text-orange-500" strokeWidth={2.5} /> Taste: Very Spicy
                             </span>
                             <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-orange-500/20 text-[10px] font-bold text-orange-700 uppercase tracking-widest shadow-sm bg-orange-100/30">
                                 <Shield size={12} className="text-orange-600" strokeWidth={2.5} /> Preservative Free
@@ -68,11 +68,11 @@ export default function ProductDetails() {
                             <div className="text-[32px] font-bold text-brand-primary leading-none mb-1.5 tracking-tight">₹{productPrice}</div>
                             <div className="text-[11px] text-text-muted/70 font-medium tracking-wide">Inclusive of all taxes</div>
                         </div>
-                        <div className="bg-white/95 backdrop-blur-md px-3.5 py-2.5 rounded-2xl shadow-md border border-white flex items-center gap-1.5 min-w-[120px] justify-center text-[#431407]">
+                        {/* <div className="bg-white/95 backdrop-blur-md px-3.5 py-2.5 rounded-2xl shadow-md border border-white flex items-center gap-1.5 min-w-[120px] justify-center text-[#431407]">
                             <Star size={16} className="fill-yellow-400 text-yellow-400 -mt-0.5" />
                             <span className="font-bold text-[15px]">4.9</span>
                             <span className="text-[10px] text-text-muted/70 font-semibold tracking-wide ml-0.5">(124 reviews)</span>
-                        </div>
+                        </div> */}
                     </div>
 
                     {/* Description */}
@@ -88,17 +88,15 @@ export default function ProductDetails() {
 
                     {/* Key Ingredients */}
                     <div className="px-5 md:px-0 pb-8 relative z-0">
-                        <h3 className="font-bold text-[19px] mb-4 tracking-tight text-[#2d1b11]">Key Ingredients</h3>
-                        <div className="grid grid-cols-2 gap-3.5 md:gap-5">
+                        <h3 className="font-bold text-[19px] mb-3 tracking-tight text-[#2d1b11]">Key Ingredients</h3>
+                        <ul className="space-y-2">
                             {ingredients.map((item, i) => (
-                                <div key={i} className="bg-white/60 hover:bg-white/80 transition-colors backdrop-blur-md px-3.5 py-4 rounded-[1.25rem] flex items-center gap-3.5 shadow-sm border border-white/60">
-                                    <div className="w-9 h-9 rounded-full bg-white flex items-center justify-center shadow-sm shrink-0">
-                                        <item.icon size={18} className={item.color} strokeWidth={2} />
-                                    </div>
-                                    <span className="text-[13px] md:text-sm font-bold text-[#431407] leading-tight pr-2">{item.name}</span>
-                                </div>
+                                <li key={i} className="flex items-center gap-3 text-[15px] md:text-base font-medium text-[#4a352a]">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-[#4a352a]/50 shrink-0"></div>
+                                    {item.name}
+                                </li>
                             ))}
-                        </div>
+                        </ul>
                     </div>
                 </div>
             </div>

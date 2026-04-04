@@ -7,7 +7,7 @@ export default function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div>
                         <h2 className="text-2xl font-serif font-bold text-white mb-4 tracking-tight">
-                            Malabar Delights
+                            Ammachi's Kitchen
                         </h2>
                         <p className="text-orange-200/80 text-sm leading-relaxed max-w-xs">
                             Bringing the authentic taste of Kerala's culinary heritage to your doorstep. Preservative-free, hand-crafted pickles made with love.
@@ -42,7 +42,7 @@ export default function Footer() {
 
                 <div className="border-t border-orange-900 mt-8 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
                     <p className="text-orange-200/60 text-xs">
-                        &copy; {new Date().getFullYear()} Malabar Delights. All rights reserved.
+                        &copy; {new Date().getFullYear()} Ammachi's Kitchen. All rights reserved.
                     </p>
                     <div className="flex gap-4">
                         <a href="#" className="text-orange-200/60 hover:text-white transition-colors text-xs">Privacy Policy</a>

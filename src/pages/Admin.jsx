@@ -429,7 +429,7 @@ export default function Admin() {
           </button>
         </nav>
         <div className="mt-auto p-4 border-t border-white/5 text-xs text-gray-500">
-          Malabar Delights &copy; 2026
+          Ammachi's Kitchen &copy; 2026
         </div>
       </aside>
 

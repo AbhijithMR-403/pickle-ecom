@@ -98,9 +98,9 @@ export default function AdminLogin() {
           </button>
         </form>
 
-        <p className="text-center text-gray-600 text-xs mt-8">
-          Malabar Delights &copy; 2026
-        </p>
+        <div className="mt-8 text-center text-sm text-gray-500">
+          Ammachi's Kitchen &copy; 2026
+        </div>
       </div>
     </div>
   );
