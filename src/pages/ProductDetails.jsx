@@ -1,23 +1,76 @@
-import { useState } from 'react';
-import { ArrowLeft, Share2, Flame, Shield, Hand, Star, Minus, Plus, ShoppingBag, MessageCircle, Leaf, Droplet, Sun, Grid3x3 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { ArrowLeft, MessageCircle, Flame, Shield, Leaf, Minus, Plus, Loader2, Package } from 'lucide-react';
+import { fetchProducts } from '../store/slices/productSlice';
+
+const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1626200419199-391ae4be7a41?q=80&w=600&auto=format&fit=crop';
+
+const TASTE_LABEL = {
+    Very_Spicy: 'Very Spicy',
+    Medium_Spicy: 'Medium Spicy',
+    Mild_Spicy: 'Mild Spicy',
+    Sour: 'Sour',
+    Sweet: 'Sweet',
+    Sweet_Sour: 'Sweet & Sour',
+    Spicy_Sour: 'Spicy & Sour',
+    Spicy_Sweet: 'Spicy & Sweet',
+};
 
 export default function ProductDetails() {
+    const { id } = useParams();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const [quantity, setQuantity] = useState(1);
+    const [activeImg, setActiveImg] = useState(null);
 
-    const productName = "Traditional Kerala Mango Pickle";
-    const productPrice = "249.00";
+    const { items: products, loading } = useSelector(s => s.products);
 
-    const ingredients = [
-        { name: 'Raw Mango', icon: Leaf, color: 'text-orange-600' },
-        { name: 'Gingelly Oil', icon: Droplet, color: 'text-orange-600' },
-        { name: 'Asafoetida', icon: Sun, color: 'text-orange-600' },
-        { name: 'Mustard Seeds', icon: Grid3x3, color: 'text-orange-600' }
-    ];
+    useEffect(() => {
+        if (products.length === 0) dispatch(fetchProducts());
+    }, [dispatch, products.length]);
+
+    const product = products.find(p => String(p.id) === String(id));
+
+    // Image gallery handling
+    const images = product?.images || [];
+    const highlightImg = images.find(i => i.is_highlight)?.image || images[0]?.image || FALLBACK_IMAGE;
+    const displayImg = activeImg || highlightImg;
+
+    useEffect(() => {
+        setActiveImg(null); // reset when product changes
+    }, [id]);
+
+    if (loading && !product) {
+        return (
+            <div className="flex items-center justify-center min-h-[60vh]">
+                <Loader2 className="animate-spin text-orange-400" size={36} />
+            </div>
+        );
+    }
+
+    if (!product) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+                <Package size={48} className="text-orange-200" />
+                <h2 className="text-xl font-bold text-[#431407]">Product not found</h2>
+                <button
+                    onClick={() => navigate('/products')}
+                    className="px-6 py-2 bg-[#ea580c] text-white font-bold rounded-xl hover:bg-[#c24100] transition-all"
+                >
+                    Back to Products
+                </button>
+            </div>
+        );
+    }
+
+    const displayPrice = product.discount_price || product.price;
+    const hasDiscount = product.discount_price && parseFloat(product.discount_price) < parseFloat(product.price);
+    const ingredients = product.ingredient_details || [];
+    const categories = product.category_details || [];
 
     return (
-        <div className="pb-32 bg-gradient-to-br from-[#bad1c1] via-[#dcd2ac] to-[#f2ecdb] text-text-main relative font-sans selection:bg-brand-primary/20 h-full">
+        <div className="pb-32 bg-gradient-to-br from-[#bad1c1] via-[#dcd2ac] to-[#f2ecdb] text-text-main relative font-sans h-full">
 
             {/* Back Button */}
             <div className="flex items-center px-4 py-3 max-w-screen-xl mx-auto md:px-8">
@@ -35,69 +88,130 @@ export default function ProductDetails() {
                     <div className="px-5 mb-5 mt-2 md:px-0 md:mb-0 md:mt-0">
                         <div className="rounded-[1.5rem] overflow-hidden shadow-2xl shadow-black/10 h-72 lg:h-[30rem] relative mx-auto max-w-md md:max-w-full ring-1 ring-black/5">
                             <img
-                                src="/images/product_detail_pickle_1772787198951.png"
-                                alt="Product"
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                                onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1626200419199-391ae4be7a41?q=80&w=600&auto=format&fit=crop' }}
+                                src={displayImg}
+                                alt={product.name}
+                                className="w-full h-full object-cover transition-all duration-500"
+                                onError={e => { e.target.src = FALLBACK_IMAGE; }}
                             />
                         </div>
+                        {/* Thumbnail strip */}
+                        {images.length > 1 && (
+                            <div className="flex gap-2 mt-3 px-1 justify-center">
+                                {images.map(img => (
+                                    <button
+                                        key={img.id}
+                                        onClick={() => setActiveImg(img.image)}
+                                        className={`w-14 h-14 rounded-xl overflow-hidden border-2 transition-all ${displayImg === img.image ? 'border-orange-500 scale-105' : 'border-transparent opacity-70 hover:opacity-100'}`}
+                                    >
+                                        <img src={img.image} alt="" className="w-full h-full object-cover" onError={e => { e.target.src = FALLBACK_IMAGE; }} />
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
 
                 {/* Right Col - Details */}
                 <div className="md:w-1/2 flex flex-col">
                     {/* Title & Badges */}
-                    <div className="px-5 mb-6 md:px-0">
-                        <h1 className="text-[32px] md:text-4xl lg:text-5xl font-serif font-bold text-[#1a0f08] leading-[1.1] mb-5 tracking-tight">{productName}</h1>
+                    <div className="px-5 mb-5 md:px-0">
+                        {categories.length > 0 && (
+                            <div className="flex flex-wrap gap-1.5 mb-2">
+                                {categories.map(cat => (
+                                    <span key={cat.id} className="text-[10px] font-bold uppercase tracking-widest text-orange-600 bg-orange-100/50 border border-orange-200/60 px-2.5 py-1 rounded-full">
+                                        {cat.name}
+                                    </span>
+                                ))}
+                            </div>
+                        )}
+                        <h1 className="text-[32px] md:text-4xl lg:text-5xl font-serif font-bold text-[#1a0f08] leading-[1.1] mb-4 tracking-tight">
+                            {product.name}
+                        </h1>
+                        {product.sub_description && (
+                            <p className="text-[15px] text-[#8c6239] font-medium italic mb-4">{product.sub_description}</p>
+                        )}
                         <div className="flex flex-wrap gap-2.5">
-                            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-orange-500/20 text-[10px] font-bold text-orange-700 uppercase tracking-widest shadow-sm bg-orange-100/30">
-                                <Flame size={12} className="text-orange-500" strokeWidth={2.5} /> Taste: Very Spicy
-                            </span>
-                            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-orange-500/20 text-[10px] font-bold text-orange-700 uppercase tracking-widest shadow-sm bg-orange-100/30">
-                                <Shield size={12} className="text-orange-600" strokeWidth={2.5} /> Preservative Free
-                            </span>
-                            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-orange-500/20 text-[10px] font-bold text-orange-700 uppercase tracking-widest shadow-sm bg-orange-100/30">
-                                <Hand size={12} className="text-orange-500" strokeWidth={2.5} /> Hand-Crafted
-                            </span>
+                            {product.taste && (
+                                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-orange-500/20 text-[10px] font-bold text-orange-700 uppercase tracking-widest bg-orange-100/30">
+                                    <Flame size={12} className="text-orange-500" strokeWidth={2.5} />
+                                    {TASTE_LABEL[product.taste] || product.taste}
+                                </span>
+                            )}
+                            {product.is_preservation_free && (
+                                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-green-500/20 text-[10px] font-bold text-green-700 uppercase tracking-widest bg-green-100/30">
+                                    <Shield size={12} className="text-green-600" strokeWidth={2.5} />
+                                    Preservative Free
+                                </span>
+                            )}
+                            {product.is_vegetarian && (
+                                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-green-500/20 text-[10px] font-bold text-green-700 uppercase tracking-widest bg-green-100/30">
+                                    <Leaf size={12} className="text-green-600" strokeWidth={2.5} />
+                                    Vegetarian
+                                </span>
+                            )}
                         </div>
                     </div>
 
-                    {/* Price & Rating */}
-                    <div className="px-5 md:px-0 flex items-end justify-between mb-8">
+                    {/* Price */}
+                    <div className="px-5 md:px-0 flex items-end gap-4 mb-6">
                         <div>
-                            <div className="text-[32px] font-bold text-brand-primary leading-none mb-1.5 tracking-tight">₹{productPrice}</div>
-                            <div className="text-[11px] text-text-muted/70 font-medium tracking-wide">Inclusive of all taxes</div>
+                            <div className="text-[32px] font-bold text-brand-primary leading-none mb-1 tracking-tight">₹{displayPrice}</div>
+                            {hasDiscount && (
+                                <div className="flex items-center gap-2">
+                                    <span className="text-sm text-gray-400 line-through">₹{product.price}</span>
+                                    <span className="text-xs font-bold text-green-600 bg-green-100 px-2 py-0.5 rounded-full">
+                                        {Math.round((1 - parseFloat(product.discount_price) / parseFloat(product.price)) * 100)}% OFF
+                                    </span>
+                                </div>
+                            )}
+                            <div className="text-[11px] text-text-muted/70 font-medium tracking-wide mt-0.5">Inclusive of all taxes</div>
                         </div>
-                        {/* <div className="bg-white/95 backdrop-blur-md px-3.5 py-2.5 rounded-2xl shadow-md border border-white flex items-center gap-1.5 min-w-[120px] justify-center text-[#431407]">
-                            <Star size={16} className="fill-yellow-400 text-yellow-400 -mt-0.5" />
-                            <span className="font-bold text-[15px]">4.9</span>
-                            <span className="text-[10px] text-text-muted/70 font-semibold tracking-wide ml-0.5">(124 reviews)</span>
-                        </div> */}
+                    </div>
+
+                    {/* Product details row */}
+                    <div className="px-5 md:px-0 mb-6 flex flex-wrap gap-3">
+                        {product.net_weight && (
+                            <div className="bg-white/60 rounded-xl px-4 py-2 text-center">
+                                <div className="text-[10px] text-gray-500 uppercase tracking-wide font-medium">Net Weight</div>
+                                <div className="text-sm font-bold text-[#431407]">{product.net_weight}</div>
+                            </div>
+                        )}
+                        {product.shelf_life_days > 0 && (
+                            <div className="bg-white/60 rounded-xl px-4 py-2 text-center">
+                                <div className="text-[10px] text-gray-500 uppercase tracking-wide font-medium">Shelf Life</div>
+                                <div className="text-sm font-bold text-[#431407]">{product.shelf_life_days} days</div>
+                            </div>
+                        )}
+                        <div className="bg-white/60 rounded-xl px-4 py-2 text-center">
+                            <div className="text-[10px] text-gray-500 uppercase tracking-wide font-medium">In Stock</div>
+                            <div className={`text-sm font-bold ${product.stock_quantity > 0 ? 'text-green-600' : 'text-red-500'}`}>
+                                {product.stock_quantity}
+                            </div>
+                        </div>
                     </div>
 
                     {/* Description */}
-                    <div className="px-5 md:px-0 mb-8">
-                        <h3 className="font-bold text-[19px] mb-3.5 tracking-tight text-[#2d1b11]">The Authentic Achaar</h3>
-                        <p className="text-[15px] md:text-base leading-relaxed text-[#4a352a] mb-4.5 font-medium pr-2 md:pr-0">
-                            Our traditional Kerala Mango Pickle is made using the age-old 'Kanni Manga' recipe passed down through generations. Each mango is hand-picked at its peak of freshness and sun-dried to perfection.
-                        </p>
-                        <p className="text-[15px] md:text-base leading-relaxed text-[#4a352a] font-medium pr-2 md:pr-0 mt-4">
-                            Infused with roasted mustard seeds, hand-ground Kashmiri red chilies, and cold-pressed sesame oil, this pickle captures the soul of Kerala's culinary heritage. No artificial colors or vinegar are used, ensuring a purely natural experience.
+                    <div className="px-5 md:px-0 mb-6">
+                        <h3 className="font-bold text-[19px] mb-3 tracking-tight text-[#2d1b11]">About this Pickle</h3>
+                        <p className="text-[15px] md:text-base leading-relaxed text-[#4a352a] font-medium">
+                            {product.description}
                         </p>
                     </div>
 
                     {/* Key Ingredients */}
-                    <div className="px-5 md:px-0 pb-8 relative z-0">
-                        <h3 className="font-bold text-[19px] mb-3 tracking-tight text-[#2d1b11]">Key Ingredients</h3>
-                        <ul className="space-y-2">
-                            {ingredients.map((item, i) => (
-                                <li key={i} className="flex items-center gap-3 text-[15px] md:text-base font-medium text-[#4a352a]">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-[#4a352a]/50 shrink-0"></div>
-                                    {item.name}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
+                    {ingredients.length > 0 && (
+                        <div className="px-5 md:px-0 pb-8">
+                            <h3 className="font-bold text-[19px] mb-3 tracking-tight text-[#2d1b11]">Key Ingredients</h3>
+                            <ul className="space-y-2">
+                                {ingredients.map(item => (
+                                    <li key={item.id} className="flex items-center gap-3 text-[15px] md:text-base font-medium text-[#4a352a]">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-[#4a352a]/50 shrink-0"></div>
+                                        {item.name}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -107,24 +221,26 @@ export default function ProductDetails() {
                     <div className="flex items-center justify-between h-14 px-1.5 min-w-[110px]">
                         <button
                             onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                            className="w-11 h-11 rounded-full flex items-center justify-center text-brand-primary hover:bg-orange-50 active:bg-orange-100 transition-colors">
+                            className="w-11 h-11 rounded-full flex items-center justify-center text-brand-primary hover:bg-orange-50 active:bg-orange-100 transition-colors"
+                        >
                             <Minus size={20} strokeWidth={2.5} />
                         </button>
                         <span className="font-bold text-xl w-6 text-center text-[#431407]">{quantity}</span>
                         <button
                             onClick={() => setQuantity(quantity + 1)}
-                            className="w-11 h-11 rounded-full flex items-center justify-center text-brand-primary hover:bg-orange-50 active:bg-orange-100 transition-colors">
+                            className="w-11 h-11 rounded-full flex items-center justify-center text-brand-primary hover:bg-orange-50 active:bg-orange-100 transition-colors"
+                        >
                             <Plus size={20} strokeWidth={2.5} />
                         </button>
                     </div>
                     <button
                         onClick={() => {
-                            const message = `Hi, I am interested in buying ${quantity}x ${productName} (₹${productPrice} each). Can you provide more details?`;
+                            const message = `Hi, I am interested in buying ${quantity}x ${product.name} (₹${displayPrice} each). Can you provide more details?`;
                             const whatsappUrl = import.meta.env.VITE_WHATSAPP_API;
-                            const fullUrl = `${whatsappUrl}?text=${encodeURIComponent(message)}`;
-                            window.open(fullUrl, '_blank');
+                            window.open(`${whatsappUrl}?text=${encodeURIComponent(message)}`, '_blank');
                         }}
-                        className="flex-1 h-14 bg-[#25D366] hover:bg-[#128C7E] active:scale-[0.98] transition-all rounded-[100px] flex items-center justify-center gap-2.5 text-white font-bold text-lg shadow-xl shadow-[#25D366]/40 mr-1">
+                        className="flex-1 h-14 bg-[#25D366] hover:bg-[#128C7E] active:scale-[0.98] transition-all rounded-[100px] flex items-center justify-center gap-2.5 text-white font-bold text-lg shadow-xl shadow-[#25D366]/40 mr-1"
+                    >
                         <MessageCircle size={20} strokeWidth={2.5} />
                         Chat on WhatsApp
                     </button>

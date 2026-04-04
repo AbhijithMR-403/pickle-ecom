@@ -348,7 +348,6 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Responsive: hide sidebar on small screens */
 @media (max-width: 768px) {
-  .admin-sidebar { display: none; }
   .admin-main { margin-left: 0; }
   .admin-topbar, .admin-toolbar, .admin-content { padding-left: 16px; padding-right: 16px; }
 }

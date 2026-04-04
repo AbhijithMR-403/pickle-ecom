@@ -1,21 +1,26 @@
-
-import SearchBar from '../components/SearchBar';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import FeaturedCard from '../components/FeaturedCard';
 import CategoryList from '../components/CategoryList';
 import ProductCard from '../components/ProductCard';
-import products from '../data/products.json';
-import { useNavigate } from 'react-router-dom';
+import { fetchProducts } from '../store/slices/productSlice';
+import { Loader2 } from 'lucide-react';
 
 export default function Home() {
-    const bestSellers = products.filter(product => product.isBestSeller);
+    const dispatch = useDispatch();
     const navigate = useNavigate();
+    const { items: products, loading } = useSelector(s => s.products);
+
+    useEffect(() => {
+        if (products.length === 0) dispatch(fetchProducts());
+    }, [dispatch]);
+
+    const bestSellers = products.filter(p => p.best_seller === true);
 
     return (
-        <div className="pb-24 bg-[#fffaf0] overflow-x-hidden h-full">            
+        <div className="pb-24 bg-[#fffaf0] overflow-x-hidden h-full">
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-            {/* <div className="md:px-4 lg:px-8 max-w-screen-xl mx-auto">
-                <SearchBar />
-            </div> */}
 
             <div className="mt-1 md:px-4 lg:px-8 max-w-screen-xl mx-auto">
                 <FeaturedCard />
@@ -30,14 +35,30 @@ export default function Home() {
                     <div className="w-1.5 h-4 bg-[#8c6239] rounded-full"></div>
                     <h3 className="text-xl font-serif font-bold text-[#431407]">Best Sellers</h3>
                 </div>
-                <button onClick={() => navigate('/products')} className="text-[13px] font-bold text-brand-accent hover:text-brand-primary transition-colors tracking-wide pr-1">View All</button>
+                <button
+                    onClick={() => navigate('/products')}
+                    className="text-[13px] font-bold text-brand-accent hover:text-brand-primary transition-colors tracking-wide pr-1"
+                >
+                    View All
+                </button>
             </div>
 
-            <div className="px-4 md:px-8 xl:px-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3.5 md:gap-6 pb-12 max-w-screen-xl mx-auto">
-                {bestSellers.map(product => (
-                    <ProductCard key={product.id} product={product} />
-                ))}
-            </div>
+            {loading ? (
+                <div className="flex justify-center py-10">
+                    <Loader2 className="animate-spin text-orange-400" size={28} />
+                </div>
+            ) : bestSellers.length === 0 ? (
+                <p className="text-center text-text-muted text-sm py-8 px-4">
+                    No best sellers yet — mark products as Best Seller in the admin panel.
+                </p>
+            ) : (
+                <div className="px-4 md:px-8 xl:px-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3.5 md:gap-6 pb-12 max-w-screen-xl mx-auto">
+                    {bestSellers.map(product => (
+                        <ProductCard key={product.id} product={product} />
+                    ))}
+                </div>
+            )}
+
         </div>
         </div>
     );

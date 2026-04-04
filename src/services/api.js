@@ -34,6 +34,16 @@ async function request(endpoint, { method = 'GET', body = null } = {}) {
 
   const res = await fetch(url, options);
 
+  if (res.status === 401) {
+    // Token is invalid or expired — clear it and redirect to login if on admin page
+    localStorage.removeItem('admin_token');
+    if (window.location.pathname.startsWith('/admin')) {
+      window.location.href = '/admin/login';
+    }
+    const text = await res.text();
+    throw new Error(text || 'Unauthorized');
+  }
+
   if (!res.ok) {
     const text = await res.text();
     throw new Error(text || `Request failed with status ${res.status}`);
