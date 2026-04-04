@@ -36,8 +36,10 @@ async function request(endpoint, { method = 'GET', body = null } = {}) {
 
   if (res.status === 401) {
     // Token is invalid or expired — clear it and redirect to login if on admin page
+    // BUT skip this if we're already on the login page (prevents reload loop on bad credentials)
+    const path = window.location.pathname;
     localStorage.removeItem('admin_token');
-    if (window.location.pathname.startsWith('/admin')) {
+    if (path.startsWith('/admin') && path !== '/admin/login') {
       window.location.href = '/admin/login';
     }
     const text = await res.text();

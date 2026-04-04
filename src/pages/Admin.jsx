@@ -163,6 +163,11 @@ export default function Admin() {
   const { token } = useSelector(s => s.auth);
   if (!token) return <Navigate to="/admin/login" replace />;
 
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate('/admin/login', { replace: true });
+  };
+
   // Redux state
   const { items: products, loading: productsLoading } = useSelector(s => s.products);
   const { items: categories, loading: categoriesLoading } = useSelector(s => s.categories);
@@ -313,7 +318,7 @@ export default function Admin() {
             <LayoutDashboard size={20} className="text-orange-400 hidden md:block" />
             <h2 className="text-base md:text-lg font-bold text-white capitalize">{tab}</h2>
           </div>
-          <button onClick={() => dispatch(logout())} className="admin-btn admin-btn-ghost text-xs gap-1.5">
+          <button onClick={handleLogout} className="admin-btn admin-btn-ghost text-xs gap-1.5">
             <LogOut size={14} /> <span className="hidden sm:inline">Logout</span>
           </button>
         </header>

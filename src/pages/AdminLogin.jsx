@@ -55,6 +55,8 @@ export default function AdminLogin() {
               <input
                 required
                 type="text"
+                name="username"
+                autoComplete="username"
                 className="admin-input pl-10"
                 placeholder="Enter username"
                 value={username}
@@ -72,6 +74,8 @@ export default function AdminLogin() {
               <input
                 required
                 type={showPassword ? 'text' : 'password'}
+                name="password"
+                autoComplete="current-password"
                 className="admin-input pl-10 pr-10"
                 placeholder="Enter password"
                 value={password}
