@@ -7,6 +7,7 @@ import ProductCard from '../components/ProductCard';
 import { fetchProducts } from '../store/slices/productSlice';
 import { fetchBanners } from '../store/slices/bannerSlice';
 import { Loader2 } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
 
 export default function Home() {
     const dispatch = useDispatch();
@@ -24,6 +25,10 @@ export default function Home() {
 
     return (
         <div className="pb-24 bg-[#fffaf0] overflow-x-hidden h-full">
+            <Helmet>
+                <title>Home | Ammachi's Kitchen</title>
+                <meta name="description" content="Welcome to Ammachi's Kitchen. Buy the best authentic Kerala style pickles made with love and traditional recipes." />
+            </Helmet>
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
 
             <div className="mt-1 md:px-4 lg:px-8 max-w-screen-xl mx-auto">

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { ArrowLeft, MessageCircle, Flame, Shield, Leaf, Minus, Plus, Loader2, Package } from 'lucide-react';
 import { fetchProducts } from '../store/slices/productSlice';
+import { Helmet } from 'react-helmet-async';
 
 const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1626200419199-391ae4be7a41?q=80&w=600&auto=format&fit=crop';
 
@@ -69,8 +70,36 @@ export default function ProductDetails() {
     const ingredients = product.ingredient_details || [];
     const categories = product.category_details || [];
 
+    const structuredData = {
+        "@context": "https://schema.org/",
+        "@type": "Product",
+        "name": product.name,
+        "image": displayImg,
+        "description": product.description || "Authentic Kerala Pickle",
+        "brand": {
+            "@type": "Brand",
+            "name": "Ammachi's Kitchen"
+        },
+        "offers": {
+            "@type": "Offer",
+            "priceCurrency": "INR",
+            "price": displayPrice,
+            "availability": product.stock_quantity > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
+        }
+    };
+
     return (
         <div className="pb-32 bg-gradient-to-br from-[#bad1c1] via-[#dcd2ac] to-[#f2ecdb] text-text-main relative font-sans h-full">
+            <Helmet>
+                <title>{product.name} | Ammachi's Kitchen</title>
+                <meta name="description" content={product.description?.substring(0, 160) || `Buy authentic Kerala style ${product.name}`} />
+                <meta property="og:title" content={`${product.name} | Ammachi's Kitchen`} />
+                <meta property="og:description" content={product.description?.substring(0, 160) || `Buy authentic Kerala style ${product.name}`} />
+                <meta property="og:image" content={displayImg} />
+                <script type="application/ld+json">
+                    {JSON.stringify(structuredData)}
+                </script>
+            </Helmet>
 
             {/* Back Button */}
             <div className="flex items-center px-4 py-3 max-w-screen-xl mx-auto md:px-8">
