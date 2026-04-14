@@ -6,6 +6,7 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   build: {
+    reportCompressedSize: false,
     chunkSizeWarningLimit: 600,
     rollupOptions: {
       output: {
