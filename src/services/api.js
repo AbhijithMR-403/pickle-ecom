@@ -110,6 +110,32 @@ export const categoryApi = {
 };
 
 // ═════════════════════════════════════════════════════════
+//  Banner API
+// ═════════════════════════════════════════════════════════
+
+export const bannerApi = {
+  //  GET /api/admin-panel/banners/
+  getAll: () => request('/admin-panel/banners'),
+
+  //  POST /api/admin-panel/banners/
+  create: (data) => request('/admin-panel/banners', {
+    method: 'POST',
+    body: data,
+  }),
+
+  //  PATCH /api/admin-panel/banners/:id/update/
+  update: (id, data) => request(`/admin-panel/banners/${id}/update`, {
+    method: 'PATCH',
+    body: data,
+  }),
+
+  //  DELETE /api/admin-panel/banners/:id/delete/
+  delete: (id) => request(`/admin-panel/banners/${id}/delete`, {
+    method: 'DELETE',
+  }),
+};
+
+// ═════════════════════════════════════════════════════════
 //  Auth API
 // ═════════════════════════════════════════════════════════
 

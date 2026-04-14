@@ -4,12 +4,13 @@ import { Link, Navigate, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Package, Tag, Plus, Pencil, Trash2, X,
   Save, Loader2, AlertTriangle, ChevronLeft, Search,
-  LogOut, Check, Menu, Home, Globe
+  LogOut, Check, Menu, Home, Globe, Image as ImageIcon
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 
 import { fetchProducts, createProduct, updateProduct, deleteProduct } from '../store/slices/productSlice';
 import { fetchCategories, createCategory, updateCategory, deleteCategory } from '../store/slices/categorySlice';
+import { fetchBanners, createBanner, updateBanner, deleteBanner } from '../store/slices/bannerSlice';
 import { logout } from '../store/slices/authSlice';
 import TailwindColorPicker, { COLORS } from '../components/TailwindColorPicker';
 
@@ -152,6 +153,141 @@ function CategoryFormModal({ category, onSave, onClose, loading }) {
   );
 }
 
+// ─── Searchable Select Component ──────────────────────────────
+function SearchableSelect({ options, value, onChange, placeholder = "Select...", required, className = "" }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  
+  const selectedOption = options.find(opt => String(opt.value) === String(value));
+  
+  const filteredOptions = options.filter(opt => 
+    opt.label.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return (
+    <div className={`relative ${className}`} tabIndex={0} onBlur={(e) => {
+      if (!e.currentTarget.contains(e.relatedTarget)) setIsOpen(false);
+    }}>
+      {/* Hidden input for native validation */}
+      <input type="text" className="opacity-0 absolute w-px h-px pointer-events-none" required={required} value={value || ''} onChange={()=>{}} />
+      <div 
+        className="admin-input flex items-center justify-between cursor-pointer"
+        onClick={() => { setIsOpen(!isOpen); setSearchTerm(""); }}
+      >
+        <span className={selectedOption ? "text-white truncate" : "text-gray-500"}>
+          {selectedOption ? selectedOption.label : placeholder}
+        </span>
+        <LucideIcons.ChevronDown size={16} className="text-gray-500 shrink-0 ml-2" />
+      </div>
+      
+      {isOpen && (
+        <div className="absolute z-[100] top-full mt-1 left-0 w-full bg-[#18181b] border border-white/10 rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.6)] overflow-hidden">
+          <div className="p-2 border-b border-white/5 bg-[#18181b] relative">
+            <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              autoFocus
+              type="text"
+              className="w-full bg-white/5 border border-white/10 rounded-md pl-8 pr-3 py-1.5 text-sm text-white outline-none focus:border-orange-500/50"
+              placeholder="Search products..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <div className="max-h-[180px] overflow-y-auto p-1 bg-[#121214] admin-scroll">
+            {filteredOptions.length === 0 ? (
+              <div className="p-3 text-sm text-gray-500 text-center">No results found</div>
+            ) : (
+              filteredOptions.map(opt => (
+                <div
+                  key={opt.value}
+                  className={`px-3 py-2 rounded-lg text-sm cursor-pointer mb-0.5 last:mb-0 transition-colors flex items-center justify-between ${
+                    String(opt.value) === String(value) 
+                      ? 'bg-orange-500/20 text-orange-400 font-medium' 
+                      : 'hover:bg-white/5 text-gray-300'
+                  }`}
+                  onClick={() => { onChange(opt.value); setIsOpen(false); }}
+                >
+                  <span className="truncate pr-2">{opt.label}</span>
+                  {String(opt.value) === String(value) && <Check size={14} className="shrink-0" />}
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Banner Form Modal ────────────────────────────────────
+function BannerFormModal({ banner, products, onSave, onClose, loading }) {
+  const isEdit = !!banner?.id;
+  const DEFAULT_BANNER = { title: '', product: '', is_active: true };
+  const [form, setForm] = useState(banner || DEFAULT_BANNER);
+  const [imageFile, setImageFile] = useState(null);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append('title', form.title || '');
+    if (form.product) formData.append('product', form.product); // Allow passing empty string or null?
+    formData.append('is_active', form.is_active);
+    if (imageFile) {
+      formData.append('image', imageFile);
+    }
+    onSave(formData, form.id);
+  };
+
+  return (
+    <div className="admin-modal-overlay" onClick={onClose}>
+      <div className="admin-modal admin-modal-sm" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-xl font-bold text-white flex items-center gap-2">
+            <ImageIcon size={20} className="text-orange-400" />
+            {isEdit ? 'Edit Banner' : 'Add Banner'}
+          </h3>
+          <button type="button" onClick={onClose} className="text-gray-500 hover:text-white transition-colors"><X size={20} /></button>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <label className="admin-field"><span>Banner Title</span>
+            <input required className="admin-input" value={form.title} onChange={e => setForm({...form, title: e.target.value})} placeholder="e.g. Summer Sale" /></label>
+          
+          <label className="admin-field"><span>Linked Product *</span>
+            <SearchableSelect
+              required
+              value={form.product}
+              onChange={(val) => setForm({...form, product: val})}
+              placeholder="Search product..."
+              options={products.map(p => ({ value: p.id, label: p.name }))}
+            />
+          </label>
+
+          <label className="admin-field"><span>Image {isEdit ? '' : '*'}</span>
+            <input type="file" required={!isEdit} accept="image/*" onChange={e => setImageFile(e.target.files[0])} className="admin-input text-gray-400 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-white/10 file:text-white hover:file:bg-white/20" />
+            {isEdit && !imageFile && banner.image && (
+              <img src={banner.image} alt="Current banner" className="mt-2 h-20 rounded-lg object-cover border border-white/10" />
+            )}
+            <p className="text-[11px] text-gray-500 mt-1">Recommended ratio: 21:9 or 16:9</p>
+          </label>
+
+          <label className="admin-toggle my-2">
+            <input type="checkbox" checked={form.is_active} onChange={e => setForm({...form, is_active: e.target.checked})} />
+            <span>Active</span>
+          </label>
+
+          <div className="flex justify-end gap-3 pt-4 border-t border-white/5">
+            <button type="button" onClick={onClose} className="admin-btn admin-btn-ghost">Cancel</button>
+            <button type="submit" className="admin-btn admin-btn-primary" disabled={loading}>
+              {loading ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+              {isEdit ? 'Update' : 'Create'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 // ═══════════════════════════════════════════════════════════
 //  ADMIN PAGE — uses Redux for all state management
 // ═══════════════════════════════════════════════════════════
@@ -171,6 +307,7 @@ export default function Admin() {
   // Redux state
   const { items: products, loading: productsLoading } = useSelector(s => s.products);
   const { items: categories, loading: categoriesLoading } = useSelector(s => s.categories);
+  const { items: banners, loading: bannersLoading } = useSelector(s => s.banners);
 
   // Local UI state
   const [tab, setTab] = useState('products');
@@ -181,6 +318,7 @@ export default function Admin() {
 
   // Modals
   const [categoryModal, setCategoryModal] = useState(null);
+  const [bannerModal, setBannerModal] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState(null);
 
   const showToast = useCallback((message, type = 'success') => setToast({ message, type }), []);
@@ -189,9 +327,44 @@ export default function Admin() {
   useEffect(() => {
     dispatch(fetchProducts());
     dispatch(fetchCategories());
+    dispatch(fetchBanners());
   }, [dispatch]);
 
-  const loading = productsLoading || categoriesLoading;
+  const loading = productsLoading || categoriesLoading || bannersLoading;
+
+  // ── Banner CRUD handlers ────────────────────────────────
+  const saveBanner = async (formData, id) => {
+    setSaving(true);
+    try {
+      if (id) {
+        await dispatch(updateBanner({ id, data: formData })).unwrap();
+        showToast('Banner updated');
+      } else {
+        await dispatch(createBanner(formData)).unwrap();
+        showToast('Banner created');
+      }
+      setBannerModal(null);
+      dispatch(fetchBanners());
+    } catch (err) {
+      showToast(extractErrorMessage(err), 'error');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDeleteBanner = async () => {
+    setSaving(true);
+    try {
+      await dispatch(deleteBanner(confirmDelete.id)).unwrap();
+      showToast('Banner deleted');
+      setConfirmDelete(null);
+      dispatch(fetchBanners());
+    } catch (err) {
+      showToast(extractErrorMessage(err), 'error');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   // ── Product CRUD handlers ───────────────────────────────
 
@@ -248,6 +421,7 @@ export default function Admin() {
   const q = search.toLowerCase();
   const filteredProducts = products.filter(p => p.name?.toLowerCase().includes(q) || p.description?.toLowerCase().includes(q));
   const filteredCategories = categories.filter(c => c.name?.toLowerCase().includes(q));
+  const filteredBanners = banners.filter(b => b.title?.toLowerCase().includes(q));
 
   const switchTab = (t) => { setTab(t); setSearch(''); setSidebarOpen(false); };
 
@@ -294,6 +468,11 @@ export default function Admin() {
             <Tag size={18} /> Categories
             <span className="ml-auto text-xs opacity-60">{categories.length}</span>
           </button>
+          <button onClick={() => switchTab('banners')}
+            className={`admin-nav-item ${tab === 'banners' ? 'admin-nav-active' : ''}`}>
+            <ImageIcon size={18} /> Banners
+            <span className="ml-auto text-xs opacity-60">{banners.length}</span>
+          </button>
         </nav>
         <div className="mt-auto p-4 border-t border-white/5 space-y-2">
           <Link to="/" className="flex items-center gap-2 text-xs text-gray-500 hover:text-gray-300 transition-colors">
@@ -337,10 +516,10 @@ export default function Admin() {
           </div>
           <button
             className="admin-btn admin-btn-primary shrink-0"
-            onClick={() => tab === 'products' ? navigate('/admin/product/add') : setCategoryModal({})}
+            onClick={() => tab === 'products' ? navigate('/admin/product/add') : tab === 'banners' ? setBannerModal({}) : setCategoryModal({})}
           >
             <Plus size={16} />
-            <span>Add {tab === 'products' ? 'Product' : 'Category'}</span>
+            <span>Add {tab === 'products' ? 'Product' : tab === 'banners' ? 'Banner' : 'Category'}</span>
           </button>
         </div>
 
@@ -423,6 +602,75 @@ export default function Admin() {
                     </div>
                   );
                 })}
+              </div>
+            </>
+          ) : tab === 'banners' ? (
+            <>
+              {/* Desktop banner table */}
+              <div className="admin-table-wrap hidden md:block">
+                <table className="admin-table">
+                  <thead><tr>
+                    <th>Banner</th>
+                    <th>Linked Product</th>
+                    <th>Status</th>
+                    <th className="text-right">Actions</th>
+                  </tr></thead>
+                  <tbody>
+                    {filteredBanners.length === 0 ? (
+                      <tr><td colSpan={4} className="text-center py-12 text-gray-500">No banners found</td></tr>
+                    ) : filteredBanners.map(b => {
+                      const linkedProduct = products.find(p => String(p.id) === String(b.product));
+                      return (
+                        <tr key={b.id}>
+                          <td>
+                            <div className="flex items-center gap-3">
+                              {b.image && <img src={b.image} alt="" className="w-16 h-8 rounded object-cover border border-white/10 shrink-0" />}
+                              <span className="text-white font-medium text-sm">{b.title || 'Untitled Banner'}</span>
+                            </div>
+                          </td>
+                          <td>
+                            <span className="text-gray-300 text-sm">
+                              {linkedProduct?.name || 'Unknown Product'}
+                            </span>
+                          </td>
+                          <td>
+                            <span className={`admin-badge ${b.is_active ? 'admin-badge-green' : 'admin-badge-gray'}`}>{b.is_active ? 'Active' : 'Inactive'}</span>
+                          </td>
+                          <td>
+                            <div className="flex justify-end gap-1">
+                              <button onClick={() => setBannerModal(b)} className="admin-action-btn"><Pencil size={14} /></button>
+                              <button onClick={() => setConfirmDelete({ type: 'banner', id: b.id, name: b.title || 'Untitled Banner' })}
+                                className="admin-action-btn admin-action-danger"><Trash2 size={14} /></button>
+                            </div>
+                          </td>
+                        </tr>
+                    )})}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile banner cards */}
+              <div className="md:hidden space-y-3">
+                {filteredBanners.length === 0 ? (
+                  <div className="text-center py-12 text-gray-500">No banners found</div>
+                ) : filteredBanners.map(b => {
+                    const linkedProduct = products.find(p => String(p.id) === String(b.product));
+                    return (
+                    <div key={b.id} className="bg-white/3 border border-white/6 rounded-xl p-4 flex flex-col gap-3">
+                      {b.image && <img src={b.image} alt="" className="w-full h-32 rounded-lg object-cover border border-white/10" />}
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div className="font-semibold text-white text-sm mb-1">{b.title || 'Untitled Banner'}</div>
+                          <div className="text-xs text-gray-500 mb-2">Linked: {linkedProduct?.name || 'Unknown'}</div>
+                          <span className={`admin-badge ${b.is_active ? 'admin-badge-green' : 'admin-badge-gray'}`}>{b.is_active ? 'Active' : 'Inactive'}</span>
+                        </div>
+                        <div className="flex flex-col gap-1 shrink-0">
+                          <button onClick={() => setBannerModal(b)} className="admin-action-btn"><Pencil size={14} /></button>
+                          <button onClick={() => setConfirmDelete({ type: 'banner', id: b.id, name: b.title || 'Untitled Banner' })} className="admin-action-btn admin-action-danger"><Trash2 size={14} /></button>
+                        </div>
+                      </div>
+                    </div>
+                )})}
               </div>
             </>
           ) : (
@@ -512,11 +760,15 @@ export default function Admin() {
         <CategoryFormModal category={categoryModal}
           onSave={saveCategory} onClose={() => setCategoryModal(null)} loading={saving} />
       )}
+      {bannerModal !== null && (
+        <BannerFormModal banner={bannerModal.id ? bannerModal : null} products={products}
+          onSave={saveBanner} onClose={() => setBannerModal(null)} loading={saving} />
+      )}
       {confirmDelete && (
         <ConfirmDialog
           title={`Delete ${confirmDelete.type}?`}
           message={`Are you sure you want to delete "${confirmDelete.name}"? This action cannot be undone.`}
-          onConfirm={confirmDelete.type === 'product' ? handleDeleteProduct : handleDeleteCategory}
+          onConfirm={confirmDelete.type === 'product' ? handleDeleteProduct : confirmDelete.type === 'banner' ? handleDeleteBanner : handleDeleteCategory}
           onCancel={() => setConfirmDelete(null)}
           loading={saving}
         />
