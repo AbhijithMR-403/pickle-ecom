@@ -222,7 +222,7 @@ export default function AdminProductForm() {
 
   return (
     <div className="admin-root">
-      <aside className="admin-sidebar">
+      <aside className="admin-sidebar hidden md:flex">
         <div className="p-5 border-b border-white/5">
           <Link to="/admin" className="flex items-center gap-3 text-white/70 hover:text-white transition-colors group">
             <ChevronLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
@@ -234,7 +234,10 @@ export default function AdminProductForm() {
       <div className="admin-main">
         <header className="admin-topbar">
           <div className="flex items-center gap-3 flex-1">
-            <Package size={20} className="text-orange-400" />
+            <Link to="/admin" className="md:hidden text-gray-400 hover:text-white transition-colors p-1 -ml-1">
+              <ChevronLeft size={20} />
+            </Link>
+            <Package size={20} className="text-orange-400 hidden md:block" />
             <h2 className="text-lg font-bold text-white capitalize">{isEdit ? 'Edit Product' : 'Add Product'}</h2>
           </div>
         </header>
@@ -388,13 +391,13 @@ export default function AdminProductForm() {
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 pt-6 border-t border-white/5 mt-8">
-                <button type="button" onClick={() => navigate('/admin')} className="admin-btn admin-btn-ghost">Cancel</button>
-                <button type="button" onClick={() => saveProduct(true)} className="admin-btn bg-white/5 text-white hover:bg-white/10 border border-white/10" disabled={saving}>
+              <div className="flex flex-wrap justify-end gap-3 pt-6 border-t border-white/5 mt-8">
+                <button type="button" onClick={() => navigate('/admin')} className="admin-btn admin-btn-ghost w-full sm:w-auto justify-center">Cancel</button>
+                <button type="button" onClick={() => saveProduct(true)} className="admin-btn bg-white/5 text-white hover:bg-white/10 border border-white/10 w-full sm:w-auto justify-center" disabled={saving}>
                   {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
                   Save & Add Another
                 </button>
-                <button type="submit" className="admin-btn admin-btn-primary" disabled={saving}>
+                <button type="submit" className="admin-btn admin-btn-primary w-full sm:w-auto justify-center" disabled={saving}>
                   {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
                   {isEdit ? 'Update Product' : 'Save Product'}
                 </button>

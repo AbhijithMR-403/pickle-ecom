@@ -515,7 +515,7 @@ export default function Admin() {
             />
           </div>
           <button
-            className="admin-btn admin-btn-primary shrink-0"
+            className="admin-btn admin-btn-primary shrink-0 w-full sm:w-auto justify-center"
             onClick={() => tab === 'products' ? navigate('/admin/product/add') : tab === 'banners' ? setBannerModal({}) : setCategoryModal({})}
           >
             <Plus size={16} />
